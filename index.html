@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alto Interiorismo | El Futuro de tu Estudio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --bg-color: #FDFCFB;
+            --text-color: #333333;
+            --subtle-text-color: #6B7280;
+            --border-color: #EAEAEA;
+            --accent-color: #C0A080;
+            --accent-hover: #A98B6C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            scroll-behavior: smooth;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                        box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                        border-color 0.4s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.07);
+        }
+        
+        .card.active {
+            transform: translateY(-6px);
+            border-color: var(--accent-color);
+            box-shadow: 0 15px 30px -5px rgba(192, 160, 128, 0.15);
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #5A5A5A, #1a1a1a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .cta-button {
+            background-color: var(--text-color);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .cta-button:hover {
+             background-color: #000000;
+             transform: scale(1.03);
+             box-shadow: 0 8px 25px rgba(0,0,0, 0.15);
+        }
+
+        .detail-view {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1), 
+                        padding 0.7s cubic-bezier(0.4, 0, 0.2, 1), 
+                        margin 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-top: 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .detail-view.open {
+            max-height: 1500px;
+            opacity: 1;
+            padding-top: 2.5rem;
+            padding-bottom: 2.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .bullet-point {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .bullet-point .icon {
+            flex-shrink: 0;
+            margin-right: 1rem;
+            color: var(--accent-color);
+            margin-top: 4px;
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen w-full p-4 sm:p-6 md:p-8">
+        <div class="max-w-7xl mx-auto">
+            <!-- Cabecera -->
+            <header class="text-center mb-16">
+                <h1 class="text-4xl md:text-5xl font-bold gradient-text tracking-tight">Alto Interiorismo</h1>
+                <p class="text-lg md:text-xl text-gray-500 mt-2">Una mirada al interior de vuestro estudio</p>
+            </header>
+
+            <!-- Grid de tarjetas de insights -->
+            <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Tarjeta 1: Gestión de Proyectos -->
+                <div id="card-project" class="card rounded-xl p-6 flex flex-col justify-between" onclick="toggleDetail('project')">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Gestión de Proyectos</h3>
+                            <i data-feather="briefcase" class="text-gray-400"></i>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6">"¿Revisamos el plano? ¿Hablaste con el carpintero? ¿Llegó el mármol?"... Suena familiar, ¿verdad?</p>
+                        <div class="h-48 w-full mx-auto"><canvas id="projectTimeChart"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 2: Comunicación con Cliente -->
+                <div id="card-client" class="card rounded-xl p-6 flex flex-col justify-between" onclick="toggleDetail('client')">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Comunicación con Cliente</h3>
+                            <i data-feather="users" class="text-gray-400"></i>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6">Cada email preguntando "cómo va lo mío" es tiempo que no dedicas a diseñar. Y sabemos que son muchos.</p>
+                        <div class="text-center my-8">
+                            <div id="email-counter" class="text-6xl font-bold text-gray-700">0</div>
+                            <p class="text-gray-500 mt-1">Emails de seguimiento por proyecto</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 3: Proceso Creativo -->
+                <div id="card-creative" class="card rounded-xl p-6 flex flex-col justify-between" onclick="toggleDetail('creative')">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Proceso Creativo</h3>
+                            <i data-feather="pen-tool" class="text-gray-400"></i>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6">La búsqueda de la pieza perfecta o la creación de moodboards es un arte que consume días. ¿Y si fueran minutos?</p>
+                        <div id="ai-gallery" class="relative h-48 w-full bg-gray-200 rounded-lg overflow-hidden mt-4"></div>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 4: Tareas Administrativas -->
+                <div id="card-admin" class="card rounded-xl p-6 flex flex-col justify-between" onclick="toggleDetail('admin')">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Administración</h3>
+                            <i data-feather="file-text" class="text-gray-400"></i>
+                        </div>
+                        <p class="text-gray-500 text-sm mb-6">Presupuestos, facturas, gastos... El trabajo "invisible" que más frena la creatividad y el crecimiento.</p>
+                        <div class="h-48 w-full mx-auto"><canvas id="bottleneckChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contenedor para la vista detallada -->
+            <div id="detail-container"></div>
+
+            <!-- Footer con CTA -->
+            <footer class="text-center mt-20">
+                <p class="text-gray-600 mb-6">Esto no es el futuro, es la eficiencia que ya está aquí.</p>
+                <button class="cta-button text-white font-semibold py-3 px-8 rounded-lg text-base" onclick="toggleContact()">
+                    Exploremos el potencial, juntos
+                </button>
+            </footer>
+
+            <!-- Contenedor para la vista de contacto -->
+            <div id="contact-container"></div>
+        </div>
+    </div>
+
+    <!-- Plantillas para la vista detallada -->
+    <template id="template-project">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div>
+                <h2 class="text-2xl font-bold mb-4">El Director de Orquesta Digital</h2>
+                <p class="text-gray-600 mb-6">Imaginad un asistente que no duerme. Centraliza toda la información, coordina a los proveedores y os alerta solo cuando vuestra decisión es imprescindible. Así, podéis dedicaros a lo que de verdad importa: el diseño.</p>
+                <div class="bullet-point">
+                    <i data-feather="zap" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">Agentes de Coordinación</h4>
+                        <p class="text-sm text-gray-500">Pequeños "trabajadores" de software que piden presupuestos, siguen el estado de los pedidos y actualizan el planning automáticamente. La tecnología que lo une todo se llama <strong>n8n</strong>, y es como un pegamento digital para vuestras herramientas.</p>
+                    </div>
+                </div>
+                <div class="bullet-point">
+                    <i data-feather="cpu" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">IA para la Planificación</h4>
+                        <p class="text-sm text-gray-500">Una <strong>Inteligencia Artificial (IA)</strong> analiza los plazos de entrega de todos los proveedores y detecta posibles cuellos de botella antes de que ocurran, sugiriendo ajustes en el cronograma para evitar retrasos costosos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-2 rounded-lg border border-[var(--border-color)] shadow-md">
+                <img src="https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.59.57.jpg" class="rounded-md object-cover w-full h-full" alt="Detalle de un espacio de trabajo de diseño bien organizado">
+            </div>
+        </div>
+    </template>
+
+    <template id="template-client">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+             <div class="bg-white p-2 rounded-lg border border-[var(--border-color)] shadow-md">
+                <img src="https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.59.37.jpg" class="rounded-md object-cover w-full h-full" alt="Salón de lujo con vistas para una gran experiencia de cliente">
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold mb-4">El Portal de Cliente Exclusivo</h2>
+                <p class="text-gray-600 mb-6">Vuestros clientes no solo pagan por un diseño, pagan por una experiencia de lujo y tranquilidad. Ofrecedles un espacio digital único donde sientan el control y el cuidado en cada fase del proyecto, 24/7.</p>
+                <div class="bullet-point">
+                    <i data-feather="shield" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">Informes de Progreso Automáticos</h4>
+                        <p class="text-sm text-gray-500">Un <strong>Agente</strong> genera un resumen semanal del progreso, con fotos y notas, y lo publica en el portal. El cliente lo consulta cuando quiere, reduciendo las llamadas y emails de seguimiento a cero.</p>
+                    </div>
+                </div>
+                <div class="bullet-point">
+                    <i data-feather="message-square" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">Sumarios Inteligentes (LLM)</h4>
+                        <p class="text-sm text-gray-500">Un <strong>Modelo de Lenguaje (LLM)</strong>, la tecnología detrás de ChatGPT, puede leer todos los emails y mensajes de un proyecto y crear un resumen de las decisiones clave. Se acabaron los "¿quién dijo qué?".</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="template-creative">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div>
+                <h2 class="text-2xl font-bold mb-4">La IA como Musa Creativa</h2>
+                <p class="text-gray-600 mb-6">La creatividad es vuestro mayor activo. La IA no la reemplaza, la multiplica. Permite explorar universos estéticos en minutos y encontrar esa pieza o idea que eleva un proyecto de "genial" a "inolvidable".</p>
+                <div class="bullet-point">
+                    <i data-feather="image" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">Generación de Conceptos Visuales</h4>
+                        <p class="text-sm text-gray-500">Herramientas como <strong>Midjourney (IA generativa)</strong> pueden crear imágenes fotorrealistas de vuestras ideas. "Un salón con microcemento, vigas de madera recuperada y una lámpara de Ingo Maurer". En 30 segundos, tenéis 4 versiones para enseñar al cliente.</p>
+                    </div>
+                </div>
+                <div class="bullet-point">
+                    <i data-feather="edit-3" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">Asistente de Redacción (LLM)</h4>
+                        <p class="text-sm text-gray-500">Un <strong>LLM</strong> puede ayudar a redactar las memorias descriptivas del proyecto. Le dais los puntos clave y los materiales, y genera un texto elocuente y técnico que solo tendréis que pulir. Horas de trabajo ahorradas.</p>
+                    </div>
+                </div>
+            </div>
+             <div class="bg-white p-2 rounded-lg border border-[var(--border-color)] shadow-md">
+                <img src="https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.59.09.jpg" class="rounded-md object-cover w-full h-full" alt="Comedor con diseño creativo y lámparas de mimbre">
+            </div>
+        </div>
+    </template>
+    
+    <template id="template-admin">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div class="bg-white p-2 rounded-lg border border-[var(--border-color)] shadow-md">
+                <img src="https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.57.54.jpg" class="rounded-md object-cover w-full h-full" alt="Espacio de comedor limpio y ordenado">
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold mb-4">La Administración Invisible</h2>
+                <p class="text-gray-600 mb-6">Las tareas administrativas son un lastre. No aportan valor creativo y consumen un tiempo precioso. La solución es hacerlas invisibles, que se ejecuten solas en segundo plano mientras os centráis en crecer.</p>
+                <div class="bullet-point">
+                    <i data-feather="file-plus" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">Facturación por Hitos</h4>
+                        <p class="text-sm text-gray-500">Conectamos vuestro gestor de proyectos a vuestro programa de facturación (usando <strong>n8n</strong>). Al marcar una fase como "completada", la factura se genera y envía al cliente automáticamente. Sin errores, sin olvidos.</p>
+                    </div>
+                </div>
+                <div class="bullet-point">
+                    <i data-feather="dollar-sign" class="icon"></i>
+                    <div>
+                        <h4 class="font-semibold">Control de Gastos Inteligente</h4>
+                        <p class="text-sm text-gray-500">Un <strong>Agente con IA</strong> puede "leer" las facturas o tickets de gasto que le enviéis por foto. Extrae los datos (proveedor, importe, IVA) y los asigna al proyecto correspondiente. El control de costes, por fin, en tiempo real.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Plantilla para la sección de contacto -->
+    <template id="template-contact">
+        <div class="bg-white p-8 md:p-12 rounded-lg border border-[var(--border-color)]">
+            <h2 class="text-2xl md:text-3xl font-bold text-center mb-4">Una conversación puede cambiarlo todo</h2>
+            <p class="text-center text-gray-600 max-w-3xl mx-auto mb-8">
+                Lo que has visto es solo la punta del iceberg. Las herramientas y sistemas actuales nos permiten construir soluciones a medida, donde el único límite es la ambición de vuestros proyectos (y bueno, quizás las leyes de la física, ¡pero por poco!).
+                <br><br>
+                Mi objetivo ahora mismo no es económico, sino encontrar proyectos con los que crecer mutuamente. Busco una colaboración real, un <strong>'win-win'</strong> donde podamos construir algo grande juntos.
+            </p>
+            <div class="max-w-xl mx-auto bg-gray-50 p-6 rounded-lg border border-[var(--border-color)]">
+                 <p class="text-center text-gray-700 mb-6">Me encantaría conocer vuestras necesidades para diseñar una estrategia que potencie vuestra creatividad. Soy <strong>Albert</strong>, puedes contactarme sin ningún compromiso:</p>
+                 <div class="space-y-4">
+                    <div class="flex items-center">
+                        <i data-feather="mail" class="text-[var(--accent-color)] w-5 h-5 mr-4"></i>
+                        <a href="mailto:albert@trendsfere.com" class="text-gray-700 hover:text-black">albert@trendsfere.com</a>
+                    </div>
+                    <div class="flex items-center">
+                        <i data-feather="phone" class="text-[var(--accent-color)] w-5 h-5 mr-4"></i>
+                        <span class="text-gray-700">+34 633 24 33 22 (Teléfono & WhatsApp)</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i data-feather="video" class="text-[var(--accent-color)] w-5 h-5 mr-4"></i>
+                        <span class="text-gray-700">O agendamos una videollamada para explorar las posibilidades.</span>
+                    </div>
+                 </div>
+            </div>
+        </div>
+    </template>
+
+
+    <script>
+        let currentOpenDetail = null;
+        let isContactOpen = false;
+
+        function toggleDetail(type) {
+            const detailContainer = document.getElementById('detail-container');
+            const clickedCard = document.getElementById(`card-${type}`);
+            
+            if (isContactOpen) {
+                toggleContact(true); // Cierra el contacto sin scroll
+            }
+
+            if (currentOpenDetail === type) {
+                detailContainer.innerHTML = '';
+                currentOpenDetail = null;
+                clickedCard.classList.remove('active');
+                return;
+            }
+            
+            if (currentOpenDetail) {
+                const previousCard = document.getElementById(`card-${currentOpenDetail}`);
+                if(previousCard) previousCard.classList.remove('active');
+            }
+
+            const template = document.getElementById(`template-${type}`);
+            const detailContent = template.content.cloneNode(true);
+            
+            detailContainer.innerHTML = '';
+            const wrapper = document.createElement('div');
+            wrapper.className = 'detail-view';
+            wrapper.appendChild(detailContent);
+            detailContainer.appendChild(wrapper);
+
+            setTimeout(() => {
+                wrapper.classList.add('open');
+                feather.replace();
+                wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 10);
+            
+            clickedCard.classList.add('active');
+            currentOpenDetail = type;
+        }
+
+        function toggleContact(instantClose = false) {
+            const contactContainer = document.getElementById('contact-container');
+            
+            if (currentOpenDetail) {
+                const previousCard = document.getElementById(`card-${currentOpenDetail}`);
+                if(previousCard) previousCard.classList.remove('active');
+                document.getElementById('detail-container').innerHTML = '';
+                currentOpenDetail = null;
+            }
+
+            if (isContactOpen) {
+                contactContainer.innerHTML = '';
+                isContactOpen = false;
+            } else {
+                const template = document.getElementById('template-contact');
+                const contactContent = template.content.cloneNode(true);
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'detail-view';
+                wrapper.appendChild(contactContent);
+                contactContainer.appendChild(wrapper);
+
+                setTimeout(() => {
+                    wrapper.classList.add('open');
+                    feather.replace();
+                    if (!instantClose) {
+                       wrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 10);
+                
+                isContactOpen = true;
+            }
+        }
+        
+        function animateCounter(id, finalValue, duration) {
+            const element = document.getElementById(id);
+            if (!element) return;
+            let start = 0;
+            const increment = finalValue / (duration / 16); 
+            const update = () => {
+                start += increment;
+                if (start < finalValue) {
+                    element.innerText = Math.ceil(start);
+                    requestAnimationFrame(update);
+                } else {
+                    element.innerText = finalValue;
+                }
+            }
+            update();
+        }
+
+        const projectTimeCtx = document.getElementById('projectTimeChart')?.getContext('2d');
+        if (projectTimeCtx) {
+            new Chart(projectTimeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Diseño y Creatividad', 'Gestión y Coordinación', 'Búsqueda', 'Admin.'],
+                    datasets: [{
+                        data: [35, 40, 15, 10],
+                        backgroundColor: ['#A98B6C', '#D4C2B0', '#EAE4DE', '#F5F2EF'],
+                        borderColor: '#ffffff',
+                        borderWidth: 4,
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw}%` } }
+                    }
+                }
+            });
+        }
+
+        const bottleneckCtx = document.getElementById('bottleneckChart')?.getContext('2d');
+        if (bottleneckCtx) {
+            new Chart(bottleneckCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Proveedores', 'Cliente', 'Admin.', 'Equipo'],
+                    datasets: [{
+                        label: 'Horas perdidas/semana',
+                        data: [12, 8, 15, 5],
+                        backgroundColor: '#EAE4DE',
+                        borderColor: '#D4C2B0',
+                        borderWidth: 1,
+                        borderRadius: 4,
+                        hoverBackgroundColor: '#D4C2B0'
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { family: 'Inter' }, color: '#6b7280' } },
+                        y: { grid: { display: false }, ticks: { font: { family: 'Inter' }, color: '#6b7280' } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: (c) => ` Aprox. ${c.raw} horas/semana` } }
+                    }
+                }
+            });
+        }
+        
+        const gallery = document.getElementById('ai-gallery');
+        const images = [
+            'https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.56.51.jpg',
+            'https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.57.03.jpg',
+            'https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.57.21.jpg',
+            'https://raw.githubusercontent.com/memorriasautomaticas/dashboardaltoimagenesjpg/main/Captura%20de%20pantalla%202025-07-21%20a%20las%209.58.56.jpg'
+        ];
+        let currentImageIndex = 0;
+
+        function changeImage() {
+            if (!gallery) return;
+            const oldImage = gallery.querySelector('img');
+            if(oldImage) {
+                oldImage.style.opacity = 0;
+                setTimeout(() => oldImage.remove(), 500);
+            }
+            const newImage = document.createElement('img');
+            newImage.src = images[currentImageIndex];
+            newImage.className = 'absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0';
+            newImage.alt = 'Imagen de interiorismo generada por IA';
+            gallery.appendChild(newImage);
+            setTimeout(() => newImage.style.opacity = 1, 50);
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+        }
+
+        window.onload = () => {
+            feather.replace();
+            animateCounter('email-counter', 47, 2000);
+            if (gallery) {
+                setInterval(changeImage, 3500);
+                changeImage();
+            }
+        };
+
+    </script>
+</body>
+</html>
